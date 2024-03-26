@@ -1,0 +1,76 @@
+from collections import deque
+
+class State:
+    def __init__(self, missionaries, cannibals, boat):
+        self.missionaries = missionaries
+        self.cannibals = cannibals
+        self.boat = boat
+
+    def is_valid(self):
+        if self.missionaries < 0 or self.missionaries > 3 or \
+           self.cannibals < 0 or self.cannibals > 3:
+            return False
+        if self.missionaries < self.cannibals and self.missionaries > 0:
+            return False
+        if 3 - self.missionaries < 3 - self.cannibals and 3 - self.missionaries > 0:
+            return False
+        return True
+
+    def is_goal(self):
+        return self.missionaries == 0 and self.cannibals == 0 and self.boat == 0
+
+    def __eq__(self, other):
+        return self.missionaries == other.missionaries and \
+               self.cannibals == other.cannibals and \
+               self.boat == other.boat
+
+    def __hash__(self):
+        return hash((self.missionaries, self.cannibals, self.boat))
+
+def get_neighbors(state):
+    neighbors = []
+    if state.boat == 1:
+        for i in range(3):
+            for j in range(3):
+                new_state = State(state.missionaries - i, state.cannibals - j, 0)
+                if new_state.is_valid():
+                    neighbors.append(new_state)
+    else:
+        for i in range(3):
+            for j in range(3):
+                new_state = State(state.missionaries + i, state.cannibals + j, 1)
+                if new_state.is_valid():
+                    neighbors.append(new_state)
+    return neighbors
+
+def bfs():
+    missionaries = int(input("Enter the number of missionaries on the starting side: "))
+    cannibals = int(input("Enter the number of cannibals on the starting side: "))
+    boat_side = int(input("Enter the side where the boat is (0 for starting side, 1 for other side): "))
+    start_state = State(missionaries, cannibals, boat_side)
+
+    visited = set()
+    queue = deque([(start_state, [])])
+
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state.is_goal():
+            return path
+        visited.add(current_state)
+        for neighbor in get_neighbors(current_state):
+            if neighbor not in visited:
+                queue.append((neighbor, path + [neighbor]))
+
+    return None
+
+def print_solution(solution):
+    if solution is None:
+        print("No solution exists.")
+    else:
+        print("Solution:")
+        for i, state in enumerate(solution):
+            print(f"Step {i + 1}: Missionaries={state.missionaries}, Cannibals={state.cannibals}, Boat={state.boat}")
+
+if __name__ == "__main__":
+    solution = bfs()
+    print_solution(solution)
