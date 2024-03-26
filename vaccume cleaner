@@ -1,0 +1,97 @@
+class VacuumCleaner:
+    def __init__(self, environment):
+        self.environment = environment
+        self.position = (0, 0)
+
+    def move_left(self):
+        if self.position[1] > 0:
+            self.position = (self.position[0], self.position[1] - 1)
+
+    def move_right(self):
+        if self.position[1] < len(self.environment[self.position[0]]) - 1:
+            self.position = (self.position[0], self.position[1] + 1)
+
+    def move_up(self):
+        if self.position[0] > 0:
+            self.position = (self.position[0] - 1, self.position[1])
+
+    def move_down(self):
+        if self.position[0] < len(self.environment) - 1:
+            self.position = (self.position[0] + 1, self.position[1])
+
+    def clean(self):
+        row, col = self.position
+        if self.environment[row][col] == 'dirty':
+            print(f"Cleaning position {self.position}")
+            self.environment[row][col] = 'clean'
+
+    def print_environment(self):
+        for row in self.environment:
+            print(' | '.join(row))
+
+def get_environment():
+    rows = int(input("Enter the number of rows in the environment: "))
+    cols = int(input("Enter the number of columns in the environment: "))
+
+    environment = []
+    for i in range(rows):
+        row = []
+        for j in range(cols):
+            square_state = input(f"Enter the state (clean/dirty) of square ({i}, {j}): ").lower()
+            row.append(square_state)
+        environment.append(row)
+
+    return environment
+
+def main():
+    # Get the environment from the user
+    environment = get_environment()
+
+    # Create the vacuum cleaner agent
+    vacuum_cleaner = VacuumCleaner(environment)
+
+    # Start cleaning
+    while any('dirty' in row for row in environment):
+        vacuum_cleaner.print_environment()
+        vacuum_cleaner.clean()
+        if 'dirty' in environment[vacuum_cleaner.position[0]]:
+            print("Moving...")
+            vacuum_cleaner.move_right()
+        else:
+            print("Moving...")
+            vacuum_cleaner.move_down()
+
+    print("Cleaning complete!")
+    vacuum_cleaner.print_environment()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
